@@ -2,6 +2,7 @@
   "doctype": "Workspace",
   "name": "Insurance Management",
   "label": "Insurance Management",
+  "title": "Insurance Management",
   "icon": "shield",
   "module": "Insurance Agent Mgmt",
   "public": 1,
