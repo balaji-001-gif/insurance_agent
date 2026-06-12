@@ -5,6 +5,15 @@ import frappe
 from frappe import _
 
 
+# Premium frequency to days mapping for next-premium-date calculations
+FREQ_DAYS = {
+    "Monthly": 30,
+    "Quarterly": 90,
+    "Half-Yearly": 180,
+    "Yearly": 365,
+}
+
+
 def get_current_agent():
     """Return the Insurance Agent doc name linked to the current Frappe user."""
     user = frappe.session.user

@@ -6,12 +6,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import add_days, add_years
 
-FREQ_DAYS = {
-    "Monthly": 30,
-    "Quarterly": 90,
-    "Half-Yearly": 180,
-    "Yearly": 365,
-}
+from insurance_agent_mgmt.utils import FREQ_DAYS
 
 
 class InsurancePolicy(Document):
