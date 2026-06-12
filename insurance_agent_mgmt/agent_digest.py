@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import frappe
 from frappe.utils import add_days, today, now_datetime, fmt_money
-from frappe.utils.data import getdate
 
 
 def send_daily_agent_digest():
@@ -73,7 +72,7 @@ def _gather_agent_summary(agent_name):
     """Collect renewals, at-risk policies, and pending commissions for one agent."""
     week_end = add_days(today(), 30)
 
-    # Upcoming renewals (next 30 days)
+    # Upcoming renewals (next 30 days) — limit to 20
     renewals = frappe.db.sql(
         """
         SELECT pr.name, pr.policy, pr.customer, pr.renewal_due_date,
@@ -85,12 +84,19 @@ def _gather_agent_summary(agent_name):
           AND pr.renewal_due_date <= %(end_date)s
           AND pr.renewal_due_date >= CURDATE()
         ORDER BY pr.renewal_due_date ASC
+        LIMIT 20
         """,
         {"agent": agent_name, "end_date": week_end},
         as_dict=True,
     )
+    # Count total renewals for overflow messaging
+    total_renewals = frappe.db.count("Policy Renewal", {
+        "agent": agent_name,
+        "status": ["in", ["Due", "Contacted", "Grace Period"]],
+        "renewal_due_date": ["between", [today(), week_end]],
+    })
 
-    # At-risk policies (overdue premiums, no payment received)
+    # At-risk policies (overdue premiums, no payment received) — limit to 20
     at_risk = frappe.db.sql(
         """
         SELECT ip.name, ip.customer, ip.insurance_product,
@@ -110,6 +116,7 @@ def _gather_agent_summary(agent_name):
                 AND pp.payment_date >= ip.next_premium_date
           )
         ORDER BY ip.next_premium_date ASC
+        LIMIT 20
         """,
         {"agent": agent_name},
         as_dict=True,
@@ -135,10 +142,20 @@ def _gather_agent_summary(agent_name):
         ["target_premium", "achieved_premium"], as_dict=True
     )
 
+    # Count total at-risk for overflow messaging
+    total_at_risk = frappe.db.count("Insurance Policy", {
+        "agent": agent_name,
+        "policy_status": "Active",
+        "premium_frequency": ("!=", "Single"),
+        "next_premium_date": ("<", today()),
+    })
+
     return {
         "agent_name": agent_name,
         "renewals": renewals,
+        "total_renewals": total_renewals,
         "at_risk_policies": at_risk,
+        "total_at_risk": total_at_risk,
         "pending_commissions": pending_comm,
         "target_premium": achievement.target_premium if achievement else 0,
         "achieved_premium": achievement.achieved_premium if achievement else 0,
@@ -148,7 +165,9 @@ def _gather_agent_summary(agent_name):
 def _build_digest_html(agent_name, data):
     """Build a styled HTML email with the agent's summary data."""
     renewals = data.get("renewals", [])
+    total_renewals = data.get("total_renewals", 0)
     at_risk = data.get("at_risk_policies", [])
+    total_at_risk = data.get("total_at_risk", 0)
     pending_comm = data.get("pending_commissions", [])
 
     # Achievement bar
@@ -189,6 +208,11 @@ def _build_digest_html(agent_name, data):
                 pbg={"Critical": "red", "High": "orange", "Medium": "#5e64ff", "Low": "grey"}.get(rn.priority, "grey"),
                 priority=rn.priority,
             )
+        if total_renewals > len(renewals):
+            rows += """
+            <tr><td colspan="2" style="padding:6px 14px;text-align:center;color:#666;font-size:12px;">
+                ... and {more} more renewals due this month
+            </td></tr>""".format(more=total_renewals - len(renewals))
 
     # At-risk section
     if at_risk:
@@ -220,6 +244,11 @@ def _build_digest_html(agent_name, data):
                 days=days,
                 label=label,
             )
+        if total_at_risk > len(at_risk):
+            rows += """
+            <tr><td colspan="2" style="padding:6px 14px;text-align:center;color:#666;font-size:12px;">
+                ... and {more} more overdue premiums
+            </td></tr>""".format(more=total_at_risk - len(at_risk))
 
     # Pending commissions section
     if pending_comm:
