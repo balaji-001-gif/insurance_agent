@@ -18,7 +18,7 @@
   ],
   "charts": [],
   "shortcuts": [],
-  "content": "[{\"id\":\"cb-leads\",\"type\":\"card\",\"data\":{\"card_name\":\"Lead & Customer Management\",\"col\":12}},{\"id\":\"cb-policy\",\"type\":\"card\",\"data\":{\"card_name\":\"Policy & Premium\",\"col\":12}},{\"id\":\"cb-agent\",\"type\":\"card\",\"data\":{\"card_name\":\"Agent & Commission\",\"col\":12}},{\"id\":\"cb-reports\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports & Analytics\",\"col\":12}}]",
+  "content": "[{\"id\":\"cb-leads\",\"type\":\"card\",\"data\":{\"card_name\":\"Lead & Customer Management\",\"col\":12}},{\"id\":\"cb-policy\",\"type\":\"card\",\"data\":{\"card_name\":\"Policy & Premium\",\"col\":12}},{\"id\":\"cb-agent\",\"type\":\"card\",\"data\":{\"card_name\":\"Agent & Commission\",\"col\":12}},{\"id\":\"cb-settings\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings\",\"col\":12}},{\"id\":\"cb-reports\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports & Analytics\",\"col\":12}}]",
   "links": [
     {
       "hidden": 0,
@@ -97,6 +97,15 @@
     {
       "hidden": 0,
       "idx": 9,
+      "label": "Insurance Claim",
+      "link_to": "Insurance Claim",
+      "link_type": "DocType",
+      "onboard": 1,
+      "type": "Link"
+    },
+    {
+      "hidden": 0,
+      "idx": 10,
       "is_query_report": 0,
       "label": "Agent & Commission",
       "link_count": 0,
@@ -106,7 +115,7 @@
     },
     {
       "hidden": 0,
-      "idx": 10,
+      "idx": 11,
       "label": "Insurance Agent",
       "link_to": "Insurance Agent",
       "link_type": "DocType",
@@ -115,7 +124,7 @@
     },
     {
       "hidden": 0,
-      "idx": 11,
+      "idx": 12,
       "label": "Agent Commission",
       "link_to": "Agent Commission",
       "link_type": "DocType",
@@ -124,7 +133,7 @@
     },
     {
       "hidden": 0,
-      "idx": 12,
+      "idx": 13,
       "label": "Insurance Product",
       "link_to": "Insurance Product",
       "link_type": "DocType",
@@ -133,7 +142,26 @@
     },
     {
       "hidden": 0,
-      "idx": 13,
+      "idx": 14,
+      "is_query_report": 0,
+      "label": "Settings",
+      "link_count": 0,
+      "onboard": 0,
+      "title": "Settings",
+      "type": "Card Break"
+    },
+    {
+      "hidden": 0,
+      "idx": 15,
+      "label": "Provider API Integration",
+      "link_to": "Provider API Integration",
+      "link_type": "DocType",
+      "onboard": 0,
+      "type": "Link"
+    },
+    {
+      "hidden": 0,
+      "idx": 16,
       "is_query_report": 0,
       "label": "Reports & Analytics",
       "link_count": 0,
@@ -143,7 +171,7 @@
     },
     {
       "hidden": 0,
-      "idx": 14,
+      "idx": 17,
       "is_query_report": 1,
       "label": "Lead Conversion Report",
       "link_to": "Lead Conversion Report",
@@ -153,7 +181,7 @@
     },
     {
       "hidden": 0,
-      "idx": 15,
+      "idx": 18,
       "is_query_report": 1,
       "label": "Agent Performance Report",
       "link_to": "Agent Performance Report",
@@ -163,7 +191,7 @@
     },
     {
       "hidden": 0,
-      "idx": 16,
+      "idx": 19,
       "is_query_report": 1,
       "label": "Premium Collection Report",
       "link_to": "Premium Collection Report",
@@ -173,7 +201,7 @@
     },
     {
       "hidden": 0,
-      "idx": 17,
+      "idx": 20,
       "is_query_report": 1,
       "label": "Policy Renewal Due Report",
       "link_to": "Policy Renewal Due Report",
@@ -183,7 +211,7 @@
     },
     {
       "hidden": 0,
-      "idx": 18,
+      "idx": 21,
       "is_query_report": 1,
       "label": "Commission Summary Report",
       "link_to": "Commission Summary Report",
