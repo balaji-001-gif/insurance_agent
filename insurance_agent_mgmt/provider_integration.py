@@ -32,7 +32,7 @@ def _get_active_integrations():
         fields=["name", "provider_name", "api_base_url", "auth_method",
                 "sync_interval_minutes", "last_sync_start", "last_sync_end",
                 "sync_plans", "sync_customers", "sync_policies",
-                "sync_renewals", "push_claims"],
+                "sync_renewals", "push_claims", "push_policy_updates"],
     )
 
 
@@ -514,7 +514,7 @@ def sync_provider_integration(integration_name):
                 frappe.log_error(title="Provider Sync Error", message=msg)
 
         # 3. Push Policy Updates (batch reconciliation for terminal statuses)
-        if integration.sync_policies:
+        if integration.push_policy_updates:
             try:
                 pushed, failed = _push_policy_updates_for_provider(integration, client)
                 step = {"step": "push_policy_updates", "pushed": pushed, "failed": failed, "status": "ok" if not failed else "partial"}
@@ -712,6 +712,7 @@ def _push_policy_updates_for_provider(integration, client):
 
     pushed = 0
     failed = 0
+    statuses = {}
 
     for policy in policies:
         policy_data = {
@@ -722,16 +723,20 @@ def _push_policy_updates_for_provider(integration, client):
         success, message, reference = client.push_policy_update(policy_data)
         if success:
             pushed += 1
-            frappe.log_error(
-                title="Policy Update Pushed (Batch)",
-                message=f"Policy {policy.name} ({policy.policy_status}) pushed to {integration.provider_name}. Ref: {reference}"
-            )
+            s = policy.policy_status
+            statuses[s] = statuses.get(s, 0) + 1
         else:
             failed += 1
-            frappe.log_error(
-                title="Policy Update Failed (Batch)",
-                message=f"Policy {policy.name} ({policy.policy_status}) — {message}"
+
+    if pushed:
+        frappe.log_error(
+            title="Policy Updates Synced",
+            message=(
+                f"Pushed {pushed} policy update(s) to {integration.provider_name}: "
+                + ", ".join(f"{n} {s}" for s, n in statuses.items())
+                + (f" ({failed} failed)" if failed else "")
             )
+        )
 
     return pushed, failed
 
@@ -759,24 +764,39 @@ def _verify_customers_for_provider(integration, client):
 
     verified = 0
     failed = 0
+    failed_names = []
 
     for cust_name in customer_names:
-        customer = frappe.get_doc("Insurance Customer", cust_name)
+        # Use db.get_value instead of loading full doc
+        cust = frappe.db.get_value(
+            "Insurance Customer", cust_name,
+            ["customer_name", "email_id", "mobile_no"],
+            as_dict=True
+        )
+        if not cust:
+            continue
+
         customer_data = {
-            "name": customer.customer_name,
-            "email": customer.email_id or "",
-            "phone": customer.mobile_no or "",
+            "name": cust.customer_name,
+            "email": cust.email_id or "",
+            "phone": cust.mobile_no or "",
         }
 
         success, message, provider_ref = client.verify_customer(customer_data)
         if success:
             verified += 1
-            frappe.log_error(
-                title="Customer Verified (Batch)",
-                message=f"Customer {customer.name} ({customer.customer_name}) verified with {integration.provider_name}. Ref: {provider_ref}"
-            )
         else:
             failed += 1
+            failed_names.append(cust.customer_name)
+
+    if verified or failed:
+        frappe.log_error(
+            title="Customer Verification Summary",
+            message=(
+                f"Verified {verified} customer(s) with {integration.provider_name}"
+                + (f". Failed: {failed}: {', '.join(failed_names[:5])}" if failed else "")
+            )
+        )
 
     return verified, failed
 

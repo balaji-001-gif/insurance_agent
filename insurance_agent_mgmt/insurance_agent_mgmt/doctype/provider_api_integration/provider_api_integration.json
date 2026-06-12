@@ -27,6 +27,7 @@
   "sync_policies",
   "col_break_3",
   "push_claims",
+  "push_policy_updates",
   "sync_renewals",
   "sync_interval_minutes",
   "section_sync_status",
@@ -156,6 +157,11 @@
    "fieldname": "push_claims",
    "fieldtype": "Check",
    "label": "Push Claims to Provider"
+  },
+  {
+   "fieldname": "push_policy_updates",
+   "fieldtype": "Check",
+   "label": "Push Policy Updates to Provider"
   },
   {
    "default": "1",
