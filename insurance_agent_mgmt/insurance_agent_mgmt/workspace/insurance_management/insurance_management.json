@@ -16,12 +16,7 @@
     {"role": "Insurance Manager"},
     {"role": "Insurance Agent"}
   ],
-  "charts": [
-    {
-      "chart_name": "Monthly Premium Collection",
-      "label": "Monthly Premium Collection"
-    }
-  ],
+  "charts": [],
   "shortcuts": [],
   "content": "[{\"id\":\"cb-leads\",\"type\":\"card\",\"data\":{\"card_name\":\"Lead & Customer Management\",\"col\":12}},{\"id\":\"cb-policy\",\"type\":\"card\",\"data\":{\"card_name\":\"Policy & Premium\",\"col\":12}},{\"id\":\"cb-agent\",\"type\":\"card\",\"data\":{\"card_name\":\"Agent & Commission\",\"col\":12}},{\"id\":\"cb-reports\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports & Analytics\",\"col\":12}}]",
   "links": [
