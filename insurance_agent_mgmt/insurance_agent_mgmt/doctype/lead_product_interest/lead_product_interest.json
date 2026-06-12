@@ -1,0 +1,21 @@
+{
+ "actions": [],
+ "creation": "2025-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "istable": 1,
+ "fields": [
+  {"fieldname": "insurance_product", "fieldtype": "Link", "in_list_view": 1, "label": "Insurance Product", "options": "Insurance Product", "reqd": 1},
+  {"fieldname": "product_type", "fieldtype": "Data", "fetch_from": "insurance_product.product_type", "in_list_view": 1, "label": "Product Type", "read_only": 1},
+  {"fieldname": "expected_premium", "fieldtype": "Currency", "in_list_view": 1, "label": "Expected Premium"},
+  {"fieldname": "interest_level", "fieldtype": "Select", "in_list_view": 1, "label": "Interest Level", "options": "Low\nMedium\nHigh\nVery High"},
+  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+ ],
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Lead Product Interest",
+ "owner": "Administrator",
+ "permissions": []
+}

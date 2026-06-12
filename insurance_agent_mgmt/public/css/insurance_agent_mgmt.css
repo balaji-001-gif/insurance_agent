@@ -1,0 +1,68 @@
+/* ──────────────────────────────────────────────
+   Insurance Agent Management — Custom Styles
+   ────────────────────────────────────────────── */
+
+/* AI Score Badge */
+.ai-score-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.ai-score-high   { background: #d4edda; color: #155724; }
+.ai-score-medium { background: #fff3cd; color: #856404; }
+.ai-score-low    { background: #f8d7da; color: #721c24; }
+
+/* KPI Cards */
+.ins-kpi-card {
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 4px solid;
+}
+
+.ins-kpi-card .kpi-label {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ins-kpi-card .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+/* Lead Status Colors in List View */
+.badge-status-new           { background: #cce5ff; color: #004085; }
+.badge-status-converted     { background: #d4edda; color: #155724; }
+.badge-status-lost          { background: #f8d7da; color: #721c24; }
+.badge-status-qualified     { background: #d1ecf1; color: #0c5460; }
+
+/* Policy Status */
+.badge-active    { background: #28a745; color: white; }
+.badge-lapsed    { background: #dc3545; color: white; }
+.badge-matured   { background: #17a2b8; color: white; }
+.badge-proposal  { background: #6c757d; color: white; }
+
+/* Dashboard */
+.insurance-dashboard .card {
+    border: none;
+    border-radius: 10px;
+}
+
+.insurance-dashboard .card-header {
+    background: transparent;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 16px;
+}
+
+/* Renewal Priority Colors */
+tr[data-priority="Critical"] td { background: #fff5f5 !important; }
+tr[data-priority="High"] td     { background: #fffbf0 !important; }

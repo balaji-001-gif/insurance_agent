@@ -1,0 +1,47 @@
+<div class="insurance-dashboard">
+    <div class="page-header mb-4">
+        <h2>Insurance Management Dashboard</h2>
+        <p class="text-muted">Real-time performance overview</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row" id="kpi-cards">
+        <div class="col-sm-3 kpi-card" id="card-leads-total"></div>
+        <div class="col-sm-3 kpi-card" id="card-conversion"></div>
+        <div class="col-sm-3 kpi-card" id="card-active-policies"></div>
+        <div class="col-sm-3 kpi-card" id="card-premium"></div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-sm-3 kpi-card" id="card-renewals"></div>
+        <div class="col-sm-3 kpi-card" id="card-commission"></div>
+        <div class="col-sm-3 kpi-card" id="card-new-leads"></div>
+        <div class="col-sm-3 kpi-card" id="card-rate"></div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mt-4">
+        <div class="col-sm-8">
+            <div class="card shadow-sm">
+                <div class="card-header"><b>Monthly Premium Collection</b></div>
+                <div class="card-body" id="chart-monthly" style="height:300px;"></div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card shadow-sm">
+                <div class="card-header"><b>Lead Funnel</b></div>
+                <div class="card-body" id="chart-funnel" style="height:300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="row mt-4">
+        <div class="col-sm-12">
+            <div class="card shadow-sm">
+                <div class="card-header"><b>🏆 Agent Leaderboard (This Month)</b></div>
+                <div class="card-body" id="leaderboard-table"></div>
+            </div>
+        </div>
+    </div>
+</div>

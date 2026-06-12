@@ -1,0 +1,23 @@
+{
+ "attach_print": 0,
+ "channel": "System Notification",
+ "condition": "doc.status in ['New','Follow-up','Contacted'] and doc.next_follow_up_date == frappe.utils.today()",
+ "creation": "2025-01-01 00:00:00.000000",
+ "date_changed": "next_follow_up_date",
+ "days_in_advance": 0,
+ "doctype": "Notification",
+ "document_type": "Insurance Lead",
+ "enabled": 1,
+ "event": "Days Before",
+ "message": "<p>Follow up due today for lead <b>{{ doc.lead_name }}</b> ({{ doc.mobile_no }}).</p><p>AI Score: {{ doc.ai_score }} | Priority: {{ doc.priority }}</p><p>Notes: {{ doc.follow_up_notes }}</p>",
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Lead Follow Up Reminder",
+ "owner": "Administrator",
+ "recipients": [
+  {"receiver_by_document_field": "assigned_agent"}
+ ],
+ "send_system_notification": 1,
+ "subject": "📞 Follow Up Today — {{ doc.lead_name }}"
+}

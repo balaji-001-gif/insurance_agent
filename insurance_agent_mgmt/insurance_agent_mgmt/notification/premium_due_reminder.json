@@ -1,0 +1,25 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.policy_status == 'Active'",
+ "creation": "2025-01-01 00:00:00.000000",
+ "date_changed": "next_premium_date",
+ "days_in_advance": 7,
+ "doctype": "Notification",
+ "document_type": "Insurance Policy",
+ "enabled": 1,
+ "event": "Days Before",
+ "message": "<p>Dear Agent,</p><p>Premium of ₹{{ doc.premium_amount }} for Policy <b>{{ doc.name }}</b> (Customer: {{ doc.customer }}) is due on <b>{{ doc.next_premium_date }}</b>.</p><p>Please arrange payment collection.</p>",
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Premium Due Reminder",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "receiver_by_document_field": "agent"
+  }
+ ],
+ "send_system_notification": 1,
+ "subject": "💰 Premium Due in 7 Days — {{ doc.name }}"
+}

@@ -1,0 +1,18 @@
+{
+ "creation": "2025-01-01 00:00:00.000000",
+ "doctype": "Page",
+ "icon": "dashboard",
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "insurance-dashboard",
+ "owner": "Administrator",
+ "page_name": "insurance-dashboard",
+ "roles": [
+  {"role": "Insurance Admin"},
+  {"role": "Insurance Manager"},
+  {"role": "Insurance Agent"}
+ ],
+ "system_page": 0,
+ "title": "Insurance Dashboard"
+}

@@ -1,0 +1,39 @@
+{
+ "actions": [],
+ "autoname": "INS-REN-.YYYY.-.#####",
+ "creation": "2025-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "fields": [
+  {"fieldname": "policy", "fieldtype": "Link", "in_list_view": 1, "label": "Policy", "options": "Insurance Policy", "reqd": 1},
+  {"fieldname": "customer", "fieldtype": "Link", "in_list_view": 1, "label": "Customer", "options": "Insurance Customer"},
+  {"fieldname": "agent", "fieldtype": "Link", "label": "Agent", "options": "Insurance Agent"},
+  {"fieldname": "col_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "renewal_due_date", "fieldtype": "Date", "in_list_view": 1, "label": "Renewal Due Date", "reqd": 1},
+  {"fieldname": "renewal_amount", "fieldtype": "Currency", "in_list_view": 1, "label": "Renewal Amount"},
+  {"fieldname": "status", "fieldtype": "Select", "in_list_view": 1, "label": "Status", "options": "Due\nContacted\nRenewed\nLapsed\nGrace Period", "default": "Due"},
+  {"fieldname": "priority", "fieldtype": "Select", "label": "Priority", "options": "Low\nMedium\nHigh\nCritical", "default": "Medium"},
+  {"fieldname": "section_contact", "fieldtype": "Section Break", "label": "Contact Details"},
+  {"fieldname": "contact_date", "fieldtype": "Date", "label": "Last Contact Date"},
+  {"fieldname": "contact_mode", "fieldtype": "Select", "label": "Contact Mode", "options": "\nCall\nSMS\nEmail\nWhatsApp\nVisit"},
+  {"fieldname": "col_break_2", "fieldtype": "Column Break"},
+  {"fieldname": "next_contact_date", "fieldtype": "Date", "label": "Next Contact Date"},
+  {"fieldname": "remarks", "fieldtype": "Text", "label": "Remarks"}
+ ],
+ "links": [],
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Policy Renewal",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "read": 1, "write": 1, "role": "Insurance Admin"},
+  {"create": 1, "delete": 0, "read": 1, "write": 1, "role": "Insurance Agent"},
+  {"create": 1, "delete": 0, "read": 1, "write": 1, "role": "Insurance Manager"}
+ ],
+ "sort_field": "renewal_due_date",
+ "sort_order": "ASC",
+ "title_field": "policy",
+ "track_changes": 1
+}

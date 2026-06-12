@@ -1,0 +1,29 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.status == 'Due' and frappe.utils.date_diff(doc.renewal_due_date, frappe.utils.today()) == 30",
+ "creation": "2025-01-01 00:00:00.000000",
+ "date_changed": "renewal_due_date",
+ "days_in_advance": 30,
+ "doctype": "Notification",
+ "document_type": "Policy Renewal",
+ "enabled": 1,
+ "event": "Days Before",
+ "message": "<p>Dear Agent {{ doc.agent }},</p><p>Policy <b>{{ doc.policy }}</b> for customer <b>{{ doc.customer }}</b> is due for renewal on <b>{{ doc.renewal_due_date }}</b>.</p><p>Renewal Amount: ₹{{ doc.renewal_amount }}</p><p>Please contact the customer immediately to ensure timely renewal.</p>",
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Policy Renewal Reminder",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "cc": "",
+   "condition": "",
+   "receiver_by_document_field": "agent",
+   "receiver_by_role": ""
+  }
+ ],
+ "send_system_notification": 1,
+ "send_to_all_assignees": 0,
+ "subject": "⚠️ Policy Renewal Due in 30 Days — {{ doc.policy }}"
+}

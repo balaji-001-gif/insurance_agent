@@ -1,0 +1,23 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "",
+ "creation": "2025-01-01 00:00:00.000000",
+ "date_changed": "date_of_birth",
+ "days_in_advance": 0,
+ "doctype": "Notification",
+ "document_type": "Insurance Customer",
+ "enabled": 1,
+ "event": "Days Before",
+ "message": "<p>Dear {{ doc.customer_name }},</p><p>🎂 Wishing you a very Happy Birthday!</p><p>Thank you for being our valued customer since {{ doc.customer_since }}.</p><p>Warm regards,<br>Your Insurance Team</p>",
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Customer Birthday Reminder",
+ "owner": "Administrator",
+ "recipients": [
+  {"receiver_by_document_field": "email_id"}
+ ],
+ "send_system_notification": 0,
+ "subject": "🎂 Happy Birthday, {{ doc.customer_name }}!"
+}
