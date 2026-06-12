@@ -1,0 +1,247 @@
+{
+ "actions": [],
+ "autoname": "field:integration_name",
+ "creation": "2025-06-12 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "integration_name",
+  "provider_name",
+  "is_active",
+  "col_break_1",
+  "company_logo",
+  "section_api_config",
+  "api_base_url",
+  "auth_method",
+  "api_key",
+  "col_break_2",
+  "api_secret",
+  "access_token",
+  "token_expiry",
+  "additional_headers",
+  "section_sync_config",
+  "sync_enabled",
+  "sync_plans",
+  "sync_customers",
+  "sync_policies",
+  "col_break_3",
+  "push_claims",
+  "sync_renewals",
+  "sync_interval_minutes",
+  "section_sync_status",
+  "last_sync_start",
+  "last_sync_end",
+  "last_sync_status",
+  "col_break_4",
+  "last_sync_message",
+  "last_sync_log",
+  "section_notes",
+  "api_documentation_url",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "integration_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Integration Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "provider_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Insurance Provider Name",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Active"
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company_logo",
+   "fieldtype": "Attach Image",
+   "label": "Company Logo"
+  },
+  {
+   "fieldname": "section_api_config",
+   "fieldtype": "Section Break",
+   "label": "API Configuration"
+  },
+  {
+   "fieldname": "api_base_url",
+   "fieldtype": "Data",
+   "label": "API Base URL",
+   "reqd": 1
+  },
+  {
+   "fieldname": "auth_method",
+   "fieldtype": "Select",
+   "label": "Authentication Method",
+   "options": "API Key\nBasic Auth\nBearer Token\nOAuth2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Password",
+   "label": "API Key / Client ID"
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Password",
+   "label": "API Secret / Client Secret"
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Password",
+   "label": "Access Token"
+  },
+  {
+   "fieldname": "token_expiry",
+   "fieldtype": "Datetime",
+   "label": "Token Expiry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "additional_headers",
+   "fieldtype": "Code",
+   "label": "Additional Headers (JSON)",
+   "options": "JSON"
+  },
+  {
+   "fieldname": "section_sync_config",
+   "fieldtype": "Section Break",
+   "label": "Sync Configuration"
+  },
+  {
+   "default": "1",
+   "fieldname": "sync_enabled",
+   "fieldtype": "Check",
+   "label": "Sync Enabled"
+  },
+  {
+   "default": "1",
+   "fieldname": "sync_plans",
+   "fieldtype": "Check",
+   "label": "Sync Plans / Products"
+  },
+  {
+   "fieldname": "sync_customers",
+   "fieldtype": "Check",
+   "label": "Sync Customer Policies"
+  },
+  {
+   "default": "1",
+   "fieldname": "sync_policies",
+   "fieldtype": "Check",
+   "label": "Sync Policies"
+  },
+  {
+   "fieldname": "col_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "push_claims",
+   "fieldtype": "Check",
+   "label": "Push Claims to Provider"
+  },
+  {
+   "default": "1",
+   "fieldname": "sync_renewals",
+   "fieldtype": "Check",
+   "label": "Sync Renewals"
+  },
+  {
+   "default": "1440",
+   "fieldname": "sync_interval_minutes",
+   "fieldtype": "Int",
+   "label": "Sync Interval (Minutes)",
+   "description": "Default 1440 (daily)"
+  },
+  {
+   "fieldname": "section_sync_status",
+   "fieldtype": "Section Break",
+   "label": "Sync Status"
+  },
+  {
+   "fieldname": "last_sync_start",
+   "fieldtype": "Datetime",
+   "label": "Last Sync Start",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_sync_end",
+   "fieldtype": "Datetime",
+   "label": "Last Sync End",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_sync_status",
+   "fieldtype": "Select",
+   "label": "Last Sync Status",
+   "options": "Not Synced\nSuccess\nFailed\nIn Progress",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_sync_message",
+   "fieldtype": "Small Text",
+   "label": "Last Sync Message",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_sync_log",
+   "fieldtype": "Code",
+   "label": "Sync Log",
+   "read_only": 1,
+   "options": "JSON"
+  },
+  {
+   "fieldname": "section_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes & Documentation"
+  },
+  {
+   "fieldname": "api_documentation_url",
+   "fieldtype": "Data",
+   "label": "API Documentation URL"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text Editor",
+   "label": "Notes"
+  }
+ ],
+ "image_field": "company_logo",
+ "links": [],
+ "modified": "2025-06-12 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Provider API Integration",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Insurance Admin", "share": 1, "write": 1},
+  {"create": 0, "delete": 0, "email": 1, "print": 1, "read": 1, "report": 1, "role": "Insurance Manager", "share": 0, "write": 1},
+  {"create": 0, "delete": 0, "read": 1, "role": "Insurance Agent"}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "integration_name",
+ "track_changes": 1
+}

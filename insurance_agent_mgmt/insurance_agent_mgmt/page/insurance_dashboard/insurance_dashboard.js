@@ -152,6 +152,9 @@ function loadDashboard() {
         },
     });
 
+    // Provider API Integrations
+    loadProviderIntegrations();
+
     // Leaderboard
     frappe.call({
         method: "insurance_agent_mgmt.api.get_agent_leaderboard",
@@ -182,6 +185,106 @@ function loadDashboard() {
             });
             html += "</tbody></table>";
             $("#leaderboard-table").html(html);
+        },
+    });
+}
+
+function loadProviderIntegrations() {
+    frappe.call({
+        method: "insurance_agent_mgmt.api.get_provider_integrations",
+        callback(r) {
+            if (!r.message || !r.message.length) {
+                $("#provider-integrations-table").html(`
+                    <div class="text-center text-muted py-3">
+                        🔌 No provider API integrations configured.
+                        <br><a href="/app/provider-api-integration" class="small">Create one →</a>
+                    </div>
+                `);
+                return;
+            }
+            let html = `<table class="table table-sm table-hover">
+                <thead class="thead-light"><tr>
+                    <th>Provider</th><th>Base URL</th><th>Status</th>
+                    <th>Last Sync</th><th>Result</th><th>Actions</th>
+                </tr></thead><tbody>`;
+            r.message.forEach(intg => {
+                const active = intg.is_active;
+                const syncStatus = intg.last_sync_status || "Not Synced";
+                const syncColor = syncStatus === "Success" ? "success"
+                    : syncStatus === "Failed" ? "danger"
+                    : syncStatus === "In Progress" ? "warning"
+                    : "secondary";
+                const statusColor = active ? "success" : "secondary";
+                const statusText = active ? "Active" : "Inactive";
+                const lastSync = intg.last_sync_end
+                    ? frappe.datetime.comment_when(intg.last_sync_end)
+                    : "—";
+                html += `<tr>
+                    <td><a href="/app/provider-api-integration/${intg.name}">${intg.provider_name}</a></td>
+                    <td class="small text-muted">${intg.api_base_url || "—"}</td>
+                    <td><span class="indicator-pill ${statusColor}">${statusText}</span></td>
+                    <td class="small">${lastSync}</td>
+                    <td><span class="indicator-pill ${syncColor}">${syncStatus}</span></td>
+                    <td>
+                        <button class="btn btn-xs btn-primary" onclick="syncProvider('${intg.name}')">
+                            Sync Now
+                        </button>
+                        <button class="btn btn-xs btn-secondary" onclick="verifyProvider('${intg.name}')">
+                            Test
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            html += "</tbody></table>";
+            $("#provider-integrations-table").html(html);
+        },
+    });
+}
+
+function syncProvider(integrationName) {
+    frappe.call({
+        method: "insurance_agent_mgmt.api.run_provider_sync",
+        args: { integration_name: integrationName },
+        callback(r) {
+            if (r.message) {
+                frappe.show_alert({
+                    message: `Sync ${r.message.status}: ${r.message.message}`,
+                    indicator: r.message.status === "Success" ? "green" : "red",
+                });
+                loadProviderIntegrations();
+            }
+        },
+    });
+}
+
+function syncAllProviders() {
+    frappe.call({
+        method: "insurance_agent_mgmt.api.run_all_provider_syncs",
+        callback(r) {
+            if (r.message) {
+                const count = r.message.length;
+                frappe.show_alert({
+                    message: `Synced ${count} integration(s)`,
+                    indicator: "blue",
+                });
+                loadProviderIntegrations();
+            }
+        },
+    });
+}
+
+function verifyProvider(integrationName) {
+    frappe.call({
+        method: "insurance_agent_mgmt.api.verify_provider_connection",
+        args: { integration_name: integrationName },
+        callback(r) {
+            if (r.message) {
+                const ok = r.message.status === "ok";
+                frappe.show_alert({
+                    message: r.message.message,
+                    indicator: ok ? "green" : "red",
+                });
+            }
         },
     });
 }

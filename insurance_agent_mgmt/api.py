@@ -269,3 +269,62 @@ def cancel_agent_commission_on_payment(doc, method):
 
     if commission_name:
         frappe.delete_doc("Agent Commission", commission_name, ignore_permissions=True)
+
+
+# ──────────────────────────────────────────────
+# Provider Integration API Endpoints
+# ──────────────────────────────────────────────
+
+@frappe.whitelist()
+def get_provider_integrations():
+    """Return all active provider API integrations for the dashboard."""
+    integrations = frappe.db.get_all(
+        "Provider API Integration",
+        fields=["name", "provider_name", "api_base_url", "is_active",
+                "last_sync_start", "last_sync_end", "last_sync_status"]
+    )
+    return integrations
+
+
+@frappe.whitelist()
+def run_provider_sync(integration_name):
+    """Manually trigger a full sync for a provider integration."""
+    from insurance_agent_mgmt.provider_integration import sync_provider_integration
+    return sync_provider_integration(integration_name)
+
+
+@frappe.whitelist()
+def run_all_provider_syncs():
+    """Manually trigger sync for all active integrations."""
+    from insurance_agent_mgmt.provider_integration import sync_all_providers
+    return sync_all_providers()
+
+
+@frappe.whitelist()
+def verify_provider_connection(integration_name):
+    """Test connection to a provider API."""
+    from insurance_agent_mgmt.provider_integration import _get_integration_doc, _get_client_for_integration
+    integration = _get_integration_doc(integration_name)
+    try:
+        client = _get_client_for_integration(integration)
+        plans = client.fetch_plans()
+        if plans is not None:
+            return {"status": "ok", "message": f"Connected. Found {len(plans)} plans."}
+        return {"status": "error", "message": "Connected but no data returned."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@frappe.whitelist()
+def sync_provider_plans_only(integration_name):
+    """Sync only plans/products from a provider."""
+    from insurance_agent_mgmt.provider_integration import _get_integration_doc, _get_client_for_integration, _upsert_plans
+    integration = _get_integration_doc(integration_name)
+    if not integration.is_active or not integration.sync_enabled:
+        return {"status": "skipped", "message": "Integration is not active"}
+    client = _get_client_for_integration(integration)
+    plans = client.fetch_plans()
+    if plans:
+        count = _upsert_plans(integration.provider_name, plans)
+        return {"status": "ok", "plans_synced": count}
+    return {"status": "ok", "plans_synced": 0}

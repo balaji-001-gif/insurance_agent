@@ -43,7 +43,9 @@ scheduler_events = {
         "insurance_agent_mgmt.renewal_automation.mark_lapsed_policies",
         "insurance_agent_mgmt.agent_digest.send_daily_agent_digest",
     ],
-    "hourly": [],
+    "hourly": [
+        "insurance_agent_mgmt.provider_integration.sync_all_providers",
+    ],
     "weekly": [],
     "monthly": [],
 }
