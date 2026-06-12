@@ -100,6 +100,58 @@ function loadDashboard() {
         },
     });
 
+    // At-Risk Policies
+    frappe.call({
+        method: "insurance_agent_mgmt.api.get_at_risk_policies",
+        callback(r) {
+            if (!r.message || !r.message.length) {
+                $("#at-risk-policies-table").html(`<p class="text-muted text-center py-3">✅ All policies are up to date on premiums</p>`);
+                return;
+            }
+
+            // KPI header showing count and max severity
+            const urgent = r.message.filter(p => p.days_overdue > 15).length;
+            const warning = r.message.filter(p => p.days_overdue > 7 && p.days_overdue <= 15).length;
+            const moderate = r.message.filter(p => p.days_overdue <= 7).length;
+            let kpiHtml = `<div class="row mb-3">
+                <div class="col-4 text-center">
+                    <div class="text-muted small">Critical (>15d)</div>
+                    <div class="h4 mb-0 font-weight-bold text-danger">${urgent}</div>
+                </div>
+                <div class="col-4 text-center">
+                    <div class="text-muted small">Warning (8-15d)</div>
+                    <div class="h4 mb-0 font-weight-bold text-warning">${warning}</div>
+                </div>
+                <div class="col-4 text-center">
+                    <div class="text-muted small">Moderate (1-7d)</div>
+                    <div class="h4 mb-0 font-weight-bold text-info">${moderate}</div>
+                </div>
+            </div><hr>`;
+
+            let html = kpiHtml + `<table class="table table-sm table-hover">
+                <thead class="thead-light"><tr>
+                    <th>Policy</th><th>Customer</th><th>Product</th>
+                    <th>Premium</th><th>Due Date</th><th>Days Overdue</th><th>Frequency</th>
+                </tr></thead><tbody>`;
+            r.message.forEach(p => {
+                const days = p.days_overdue;
+                const color = days > 15 ? "danger" : days > 7 ? "warning" : "info";
+                const label = days > 15 ? "Critical" : days > 7 ? "At Risk" : "Past Due";
+                html += `<tr>
+                    <td><a href="/app/insurance-policy/${p.name}">${p.name}</a></td>
+                    <td>${p.customer}</td>
+                    <td>${p.insurance_product || "—"}</td>
+                    <td>₹${frappe.format(p.premium_amount || 0, {fieldtype:"Currency"})}</td>
+                    <td>${p.next_premium_date}</td>
+                    <td><span class="indicator-pill ${color}">${days}d — ${label}</span></td>
+                    <td>${p.premium_frequency}</td>
+                </tr>`;
+            });
+            html += "</tbody></table>";
+            $("#at-risk-policies-table").html(html);
+        },
+    });
+
     // Leaderboard
     frappe.call({
         method: "insurance_agent_mgmt.api.get_agent_leaderboard",

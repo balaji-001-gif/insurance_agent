@@ -157,6 +157,44 @@ def get_renewals_this_week():
     return data
 
 
+@frappe.whitelist()
+def get_at_risk_policies():
+    """Return Active policies with past-due premiums that are at risk of lapsing."""
+    from insurance_agent_mgmt.utils import get_current_agent, is_insurance_admin_or_manager
+
+    agent = get_current_agent()
+    is_admin = is_insurance_admin_or_manager()
+
+    conditions = ""
+    if not is_admin and agent:
+        conditions += f" AND ip.agent = '{agent}'"
+
+    data = frappe.db.sql(
+        f"""
+        SELECT ip.name, ip.customer, ip.agent,
+               ip.insurance_product, ip.next_premium_date,
+               ip.premium_amount, ip.premium_frequency,
+               DATEDIFF(CURDATE(), ip.next_premium_date) as days_overdue
+        FROM `tabInsurance Policy` ip
+        WHERE ip.policy_status = 'Active'
+          AND ip.premium_frequency != 'Single'
+          AND ip.next_premium_date IS NOT NULL
+          AND ip.next_premium_date < CURDATE()
+          AND NOT EXISTS (
+              SELECT 1 FROM `tabPremium Payment` pp
+              WHERE pp.policy = ip.name
+                AND pp.status = 'Paid'
+                AND pp.docstatus = 1
+                AND pp.payment_date >= ip.next_premium_date
+          )
+          {conditions}
+        ORDER BY ip.next_premium_date ASC
+        """,
+        as_dict=True,
+    )
+    return data
+
+
 def _resolve_agent(doc):
     """Resolve the agent from the payment or its linked policy."""
     agent = doc.agent
