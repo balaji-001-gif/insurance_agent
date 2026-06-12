@@ -61,17 +61,18 @@ scheduler_events = {
 # Permissions
 # ---------------------------------------------
 has_permission = {
-    "Insurance Lead": "insurance_agent_mgmt.utils.has_permission",
-    "Insurance Policy": "insurance_agent_mgmt.utils.has_permission",
+    "Insurance Lead":     "insurance_agent_mgmt.utils.has_permission",
+    "Insurance Policy":   "insurance_agent_mgmt.utils.has_permission",
     "Insurance Customer": "insurance_agent_mgmt.utils.has_permission",
-    "Premium Payment": "insurance_agent_mgmt.utils.has_permission",
-    "Agent Commission": "insurance_agent_mgmt.utils.has_permission",
+    "Premium Payment":    "insurance_agent_mgmt.utils.has_permission",
+    "Agent Commission":   "insurance_agent_mgmt.utils.has_permission",
+    "Insurance Claim":    "insurance_agent_mgmt.utils.has_permission",
 }
 
 # ---------------------------------------------
-# Login
+# Session
 # ---------------------------------------------
-on_login = "insurance_agent_mgmt.utils.set_agent_session"
+on_session_creation = "insurance_agent_mgmt.utils.set_agent_session"
 
 # ---------------------------------------------
 # Website Context
