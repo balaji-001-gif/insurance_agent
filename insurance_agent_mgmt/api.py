@@ -82,79 +82,6 @@ def get_monthly_trends():
     return data
 
 
-def create_agent_commission_on_payment(doc, method):
-    """Auto-create Agent Commission when a Premium Payment is submitted."""
-    if doc.docstatus != 1:
-        return
-
-    # Determine the agent: from payment or from the linked policy
-    agent = doc.agent
-    if not agent and doc.policy:
-        policy = frappe.get_doc("Insurance Policy", doc.policy)
-        agent = policy.agent
-
-    if not agent:
-        return
-
-    # Check if any paid payments already exist for this policy
-    existing_payments = frappe.db.count("Premium Payment", {
-        "policy": doc.policy,
-        "status": "Paid",
-        "name": ("!=", doc.name),
-    })
-    commission_type = "First Year" if existing_payments == 0 else "Renewal"
-
-    # Get commission rate from product, then fall back to agent default
-    commission_rate = 0
-    policy = frappe.get_doc("Insurance Policy", doc.policy) if doc.policy else None
-    if policy and policy.insurance_product:
-        product = frappe.get_doc("Insurance Product", policy.insurance_product)
-        if commission_type == "First Year":
-            commission_rate = flt(product.commission_rate or 0)
-        else:
-            commission_rate = flt(product.renewal_commission_rate or 0)
-
-    # Fallback to agent's default commission rate
-    if not commission_rate:
-        agent_doc = frappe.get_cached_doc("Insurance Agent", agent)
-        commission_rate = flt(agent_doc.commission_rate or 0)
-
-    premium_amount = flt(doc.amount or 0)
-    commission_amount = premium_amount * commission_rate / 100.0
-
-    commission = frappe.get_doc({
-        "doctype": "Agent Commission",
-        "agent": agent,
-        "policy": doc.policy,
-        "customer": doc.customer,
-        "commission_type": commission_type,
-        "commission_date": doc.payment_date,
-        "payment_status": "Pending",
-        "premium_amount": premium_amount,
-        "commission_rate": commission_rate,
-        "commission_amount": commission_amount,
-        "remarks": f"Auto-created from Premium Payment: {doc.name}",
-    })
-    commission.flags.ignore_permissions = True
-    commission.insert()
-
-
-def cancel_agent_commission_on_payment(doc, method):
-    """Remove the auto-created Agent Commission when a Premium Payment is cancelled."""
-    if doc.docstatus != 2:
-        return
-
-    commission_name = frappe.db.get_value("Agent Commission", {
-        "policy": doc.policy,
-        "agent": doc.agent,
-        "commission_date": doc.payment_date,
-        "remarks": ("like", f"%{doc.name}%"),
-    })
-
-    if commission_name:
-        frappe.delete_doc("Agent Commission", commission_name, ignore_permissions=True)
-
-
 @frappe.whitelist()
 def get_lead_funnel():
     """Return lead counts by status for funnel chart."""
@@ -196,17 +123,21 @@ def get_agent_leaderboard(period="monthly"):
     return data
 
 
+def _resolve_agent(doc):
+    """Resolve the agent from the payment or its linked policy."""
+    agent = doc.agent
+    if not agent and doc.policy:
+        policy = frappe.get_doc("Insurance Policy", doc.policy)
+        agent = policy.agent
+    return agent
+
+
 def create_agent_commission_on_payment(doc, method):
     """Auto-create Agent Commission when a Premium Payment is submitted."""
     if doc.docstatus != 1:
         return
 
-    # Determine the agent: from payment or from the linked policy
-    agent = doc.agent
-    if not agent and doc.policy:
-        policy = frappe.get_doc("Insurance Policy", doc.policy)
-        agent = policy.agent
-
+    agent = _resolve_agent(doc)
     if not agent:
         return
 
@@ -254,13 +185,12 @@ def create_agent_commission_on_payment(doc, method):
 
 
 def cancel_agent_commission_on_payment(doc, method):
-    """Remove the auto-created Agent Commission when a Premium Payment is cancelled."""
+    """Delete the auto-created Agent Commission when a Premium Payment is cancelled."""
     if doc.docstatus != 2:
         return
 
     commission_name = frappe.db.get_value("Agent Commission", {
         "policy": doc.policy,
-        "agent": doc.agent,
         "commission_date": doc.payment_date,
         "remarks": ("like", f"%{doc.name}%"),
     })
