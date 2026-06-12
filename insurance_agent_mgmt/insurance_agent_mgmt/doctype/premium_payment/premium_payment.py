@@ -29,6 +29,10 @@ class PremiumPayment(Document):
 
         policy = frappe.get_doc("Insurance Policy", self.policy)
 
+        # Reactivate if policy was lapsed
+        if policy.policy_status == "Lapsed":
+            policy.db_set("policy_status", "Active")
+
         # Increment total premium paid
         current_total = float(policy.total_premium_paid or 0)
         policy.db_set("total_premium_paid", current_total + float(self.amount))
