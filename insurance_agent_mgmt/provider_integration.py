@@ -652,7 +652,9 @@ def _upsert_renewals(provider_name, renewals):
 # ──────────────────────────────────────────────
 
 def push_claim_to_provider(doc, method):
-    """When an Insurance Claim is submitted, push it to the provider's API."""
+    """When an Insurance Claim is submitted, push it to the provider's API.
+    Adds a note to claim_notes rather than changing claim_status (which has fixed options).
+    """
     if doc.docstatus != 1:
         return
 
@@ -687,8 +689,12 @@ def push_claim_to_provider(doc, method):
     }
 
     success, message, reference = client.push_claim(claim_data)
-    if success and reference:
-        doc.db_set("claim_status", "Sent to Provider")
+    if success:
+        ref_note = f" [Provider Ref: {reference}]" if reference else ""
+        # Append to claim_notes instead of changing claim_status
+        existing_notes = doc.claim_notes or ""
+        note = f"\n<p><strong>Sent to {provider_name}</strong> — {now_datetime().strftime('%b %d, %Y %H:%M')}{ref_note}</p>"
+        frappe.db.set_value("Insurance Claim", doc.name, "claim_notes", existing_notes + note)
         frappe.log_error(
             title="Claim Pushed to Provider",
             message=f"Claim {doc.name} pushed to {provider_name}. Ref: {reference}"
@@ -696,9 +702,21 @@ def push_claim_to_provider(doc, method):
 
 
 def push_policy_update_to_provider(doc, method):
-    """When a policy status changes (Surrendered/Cancelled), notify the provider."""
+    """When a policy status changes to Surrendered or Lapsed, notify the provider.
+    Only triggers on actual status change (not on every save).
+    """
     if not doc.policy_status:
         return
+
+    # Only push for terminal status changes that should be communicated to provider
+    PUSHABLE_STATUSES = ("Surrendered", "Lapsed", "Matured", "Claimed")
+    if doc.policy_status not in PUSHABLE_STATUSES:
+        return
+
+    # Check that status actually changed from previous value
+    old_status = frappe.db.get_value("Insurance Policy", doc.name, "policy_status")
+    if old_status == doc.policy_status:
+        return  # Not a status change, skip
 
     product = frappe.get_doc("Insurance Product", doc.insurance_product) if doc.insurance_product else None
     if not product or not product.insurance_company:
@@ -726,5 +744,5 @@ def push_policy_update_to_provider(doc, method):
     if reference:
         frappe.log_error(
             title="Policy Update Pushed",
-            message=f"Policy {doc.name} status '{doc.policy_status}' pushed to {provider_name}. Ref: {reference}"
+            message=f"Policy {doc.name} status changed from '{old_status}' to '{doc.policy_status}' — pushed to {provider_name}. Ref: {reference}"
         )
