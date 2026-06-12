@@ -1,0 +1,26 @@
+{
+ "actions": [],
+ "creation": "2025-06-12 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "istable": 1,
+ "fields": [
+  {"fieldname": "nominee_name", "fieldtype": "Data", "in_list_view": 1, "label": "Nominee Name", "reqd": 1},
+  {"fieldname": "nominee_relation", "fieldtype": "Select", "in_list_view": 1, "label": "Relation", "options": "\nSpouse\nChild\nParent\nSibling\nOther", "reqd": 1},
+  {"fieldname": "col_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "nominee_dob", "fieldtype": "Date", "label": "Date of Birth"},
+  {"fieldname": "nominee_share", "fieldtype": "Percent", "in_list_view": 1, "label": "Share %", "default": "100"},
+  {"fieldname": "nominee_mobile", "fieldtype": "Data", "label": "Mobile No", "options": "Phone"},
+  {"fieldname": "col_break_2", "fieldtype": "Column Break"},
+  {"fieldname": "guardian_name", "fieldtype": "Data", "label": "Guardian (if minor)"},
+  {"fieldname": "is_minor", "fieldtype": "Check", "label": "Minor Nominee"},
+  {"fieldname": "action", "fieldtype": "Select", "in_list_view": 1, "label": "Action", "options": "\nAdd\nUpdate\nRemove", "default": "Add", "description": "Add new nominee, Update existing, or Remove nominee"}
+ ],
+ "modified": "2025-06-12 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Service Request Nominee",
+ "owner": "Administrator",
+ "permissions": []
+}

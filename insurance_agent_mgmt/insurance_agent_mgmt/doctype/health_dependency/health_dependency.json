@@ -1,0 +1,27 @@
+{
+ "actions": [],
+ "creation": "2025-06-12 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "istable": 1,
+ "fields": [
+  {"fieldname": "dependency_type", "fieldtype": "Select", "in_list_view": 1, "label": "Dependency Type", "options": "\nPre-existing Condition\nFamily History\nLifestyle Factor\nDisability\nOther", "reqd": 1},
+  {"fieldname": "condition_name", "fieldtype": "Data", "in_list_view": 1, "label": "Condition / Factor", "reqd": 1},
+  {"fieldname": "severity", "fieldtype": "Select", "in_list_view": 1, "label": "Severity", "options": "\nMild\nModerate\nSevere\nCritical"},
+  {"fieldname": "col_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "diagnosis_date", "fieldtype": "Date", "label": "Diagnosis / Identified Date"},
+  {"fieldname": "is_controlled", "fieldtype": "Select", "label": "Currently Controlled?", "options": "\nYes\nNo\nN/A"},
+  {"fieldname": "medication_details", "fieldtype": "Small Text", "label": "Medication Details"},
+  {"fieldname": "col_break_2", "fieldtype": "Column Break"},
+  {"fieldname": "relation_to_insured", "fieldtype": "Data", "label": "Relation to Insured (for family history)", "depends_on": "eval:doc.dependency_type=='Family History'"},
+  {"fieldname": "additional_loading_pct", "fieldtype": "Percent", "label": "Premium Loading %"},
+  {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"}
+ ],
+ "modified": "2025-06-12 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Health Dependency",
+ "owner": "Administrator",
+ "permissions": []
+}

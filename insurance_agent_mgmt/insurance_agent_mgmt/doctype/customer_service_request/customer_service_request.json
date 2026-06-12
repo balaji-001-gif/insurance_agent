@@ -1,0 +1,272 @@
+{
+ "actions": [],
+ "autoname": "SRV-.YYYY.-.#####",
+ "creation": "2025-06-12 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "service_type",
+  "request_status",
+  "priority",
+  "column_break_1",
+  "request_date",
+  "requested_by",
+  "customer",
+  "customer_name",
+  "customer_mobile",
+  "policy_details_section",
+  "insurance_policy",
+  "policy_number",
+  "column_break_policy",
+  "insurance_product",
+  "agent",
+  "request_details_section",
+  "current_value",
+  "column_break_details",
+  "requested_value",
+  "reason",
+  "nominee_change_section",
+  "proposed_nominees",
+  "attachments_section",
+  "service_documents",
+  "processing_section",
+  "assigned_to",
+  "resolution_date",
+  "column_break_process",
+  "resolved_by",
+  "resolution_notes",
+  "charges",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "SRV-.YYYY.-",
+   "reqd": 1
+  },
+  {
+   "fieldname": "service_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Service Type",
+   "options": "\nNominee Change\nAddress Change\nContact Update\nKYC Update\nPolicy Surrender\nPolicy Revival\nAssignment/Nomination\nLoan Request\nDuplicate Policy Document\nPortability Request\nNominee Status Change\nOther",
+   "reqd": 1
+  },
+  {
+   "fieldname": "request_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Open\nIn Progress\nPending Documents\nApproved\nRejected\nCompleted\nCancelled",
+   "default": "Open",
+   "reqd": 1
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Priority",
+   "options": "Low\nMedium\nHigh\nUrgent",
+   "default": "Medium"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "request_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Request Date",
+   "default": "Today",
+   "reqd": 1
+  },
+  {
+   "fieldname": "requested_by",
+   "fieldtype": "Data",
+   "label": "Requested By"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Insurance Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "fetch_from": "customer.customer_name",
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_mobile",
+   "fieldtype": "Data",
+   "fetch_from": "customer.mobile_no",
+   "label": "Customer Mobile",
+   "read_only": 1
+  },
+  {
+   "fieldname": "policy_details_section",
+   "fieldtype": "Section Break",
+   "label": "Policy Details"
+  },
+  {
+   "fieldname": "insurance_policy",
+   "fieldtype": "Link",
+   "label": "Insurance Policy",
+   "options": "Insurance Policy"
+  },
+  {
+   "fieldname": "policy_number",
+   "fieldtype": "Data",
+   "fetch_from": "insurance_policy.policy_number",
+   "label": "Policy Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_policy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "insurance_product",
+   "fieldtype": "Data",
+   "fetch_from": "insurance_policy.insurance_product",
+   "label": "Insurance Product",
+   "read_only": 1
+  },
+  {
+   "fieldname": "agent",
+   "fieldtype": "Data",
+   "fetch_from": "insurance_policy.agent",
+   "label": "Agent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "request_details_section",
+   "fieldtype": "Section Break",
+   "label": "Request Details"
+  },
+  {
+   "fieldname": "current_value",
+   "fieldtype": "Small Text",
+   "label": "Current Value / Details"
+  },
+  {
+   "fieldname": "column_break_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "requested_value",
+   "fieldtype": "Small Text",
+   "label": "Requested / New Value"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason for Change"
+  },
+  {
+   "fieldname": "nominee_change_section",
+   "fieldtype": "Section Break",
+   "label": "Proposed Nominees",
+   "description": "Add the proposed nominee details below. Use Action column: Add (new nominee), Update (change existing), Remove (delete nominee)."
+  },
+  {
+   "fieldname": "proposed_nominees",
+   "fieldtype": "Table",
+   "label": "Proposed Nominees",
+   "options": "Service Request Nominee",
+   "description": "List of proposed nominee changes"
+  },
+  {
+   "fieldname": "attachments_section",
+   "fieldtype": "Section Break",
+   "label": "Supporting Documents"
+  },
+  {
+   "fieldname": "service_documents",
+   "fieldtype": "Table",
+   "label": "Service Documents",
+   "options": "Insurance Document"
+  },
+  {
+   "fieldname": "processing_section",
+   "fieldtype": "Section Break",
+   "label": "Processing Details"
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Assigned To",
+   "options": "User"
+  },
+  {
+   "fieldname": "resolution_date",
+   "fieldtype": "Date",
+   "label": "Resolution Date"
+  },
+  {
+   "fieldname": "column_break_process",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "resolved_by",
+   "fieldtype": "Link",
+   "label": "Resolved By",
+   "options": "User"
+  },
+  {
+   "fieldname": "resolution_notes",
+   "fieldtype": "Text Editor",
+   "label": "Resolution Notes"
+  },
+  {
+   "fieldname": "charges",
+   "fieldtype": "Currency",
+   "label": "Service Charges"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Customer Service Request",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-06-12 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Customer Service Request",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Insurance Admin", "share": 1, "submit": 1, "cancel": 1, "amend": 1, "write": 1},
+  {"create": 1, "delete": 0, "email": 1, "print": 1, "read": 1, "report": 1, "role": "Insurance Agent", "share": 1, "submit": 1, "write": 1},
+  {"create": 1, "delete": 0, "email": 1, "print": 1, "read": 1, "report": 1, "role": "Insurance Manager", "share": 1, "submit": 1, "cancel": 1, "write": 1}
+ ],
+ "quick_entry": 1,
+ "route": "customer-service-request",
+ "search_fields": "service_type,customer_name,request_status",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "service_type",
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
+}

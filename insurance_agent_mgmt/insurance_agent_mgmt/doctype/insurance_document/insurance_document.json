@@ -11,7 +11,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Document Type",
-   "options": "Policy Document\nMedical Report\nID Proof\nIncome Proof\nClaim Form\nOther",
+   "options": "Aadhaar Card\nPAN Card\nPassport\nDriving License\nVoter ID\nBank Statement\nIncome Proof\nAddress Proof\nPhoto\nSignature Proof\nMedical Report\nPolicy Document\nClaim Form\nOther",
    "reqd": 1
   },
   {
