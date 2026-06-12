@@ -1,0 +1,25 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.policy_status == 'Active'",
+ "creation": "2025-01-01 00:00:00.000000",
+ "date_changed": "next_premium_date",
+ "days_in_advance": 15,
+ "doctype": "Notification",
+ "document_type": "Insurance Policy",
+ "enabled": 1,
+ "event": "Days After",
+ "message": "<h3>⚠️ Policy Premium Overdue — Lapse Warning</h3>\n<p>Dear Agent,</p>\n<p>Policy <b>{{ doc.name }}</b> for customer <b>{{ doc.customer }}</b> is <b>15 days past due</b> on premium payment.</p>\n<table border=\"1\" cellpadding=\"8\" cellspacing=\"0\" style=\"border-collapse:collapse; margin:10px 0;\">\n<tr><td><b>Policy</b></td><td>{{ doc.name }}</td></tr>\n<tr><td><b>Customer</b></td><td>{{ doc.customer }}</td></tr>\n<tr><td><b>Premium Amount</b></td><td>₹{{ doc.premium_amount }}</td></tr>\n<tr><td><b>Due Date</b></td><td>{{ doc.next_premium_date }}</td></tr>\n<tr><td><b>Product</b></td><td>{{ doc.insurance_product }}</td></tr>\n</table>\n<p>The policy will be marked as <b>Lapsed</b> in approximately 15 days if payment is not received.</p>\n<p>Please contact the customer immediately to collect the premium and avoid policy lapse.</p>\n<hr>\n<p style=\"color:#666; font-size:12px;\">This is an automated reminder from the Insurance Management System.</p>",
+ "modified": "2025-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Insurance Agent Mgmt",
+ "name": "Premium Lapse Warning",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "receiver_by_document_field": "agent"
+  }
+ ],
+ "send_system_notification": 1,
+ "subject": "⚠️ Premium 15 Days Overdue — Policy {{ doc.name }} May Lapse"
+}
