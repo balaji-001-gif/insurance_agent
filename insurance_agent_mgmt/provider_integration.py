@@ -513,6 +513,34 @@ def sync_provider_integration(integration_name):
                 log["steps"].append({"step": "renewals", "status": "failed", "error": str(e)})
                 frappe.log_error(title="Provider Sync Error", message=msg)
 
+        # 3. Push Policy Updates (batch reconciliation for terminal statuses)
+        if integration.sync_policies:
+            try:
+                pushed, failed = _push_policy_updates_for_provider(integration, client)
+                step = {"step": "push_policy_updates", "pushed": pushed, "failed": failed, "status": "ok" if not failed else "partial"}
+                log["steps"].append(step)
+                if failed:
+                    errors.append(f"{failed} policy update(s) failed")
+            except Exception as e:
+                msg = f"Policy updates push failed: {e}"
+                errors.append(msg)
+                log["steps"].append({"step": "push_policy_updates", "status": "failed", "error": str(e)})
+                frappe.log_error(title="Provider Sync Error", message=msg)
+
+        # 4. Verify Customers (batch reconciliation)
+        if integration.sync_customers:
+            try:
+                verified, failed_cust = _verify_customers_for_provider(integration, client)
+                step = {"step": "verify_customers", "verified": verified, "failed": failed_cust, "status": "ok" if not failed_cust else "partial"}
+                log["steps"].append(step)
+                if failed_cust:
+                    errors.append(f"{failed_cust} customer(s) verification failed")
+            except Exception as e:
+                msg = f"Customer verification failed: {e}"
+                errors.append(msg)
+                log["steps"].append({"step": "verify_customers", "status": "failed", "error": str(e)})
+                frappe.log_error(title="Provider Sync Error", message=msg)
+
         status = "Failed" if errors else "Success"
         message = "; ".join(errors) if errors else f"Synced {len(log['steps'])} data types"
 
@@ -645,6 +673,112 @@ def _upsert_renewals(provider_name, renewals):
     frappe.db.commit()
     return count
 
+
+
+# ──────────────────────────────────────────────
+# Batch sync helpers (called from sync_provider_integration)
+# ──────────────────────────────────────────────
+
+def _get_products_for_provider(provider_name):
+    """Return list of Insurance Product names belonging to a provider."""
+    return frappe.db.get_all(
+        "Insurance Product",
+        filters={"insurance_company": provider_name, "status": "Active"},
+        pluck="name",
+    )
+
+
+def _push_policy_updates_for_provider(integration, client):
+    """Batch push terminal status changes to the provider.
+    
+    Finds all policies linked to this provider's products that have
+    terminal statuses (Surrendered, Lapsed, Matured, Claimed) and
+    pushes updates via the API.
+    """
+    products = _get_products_for_provider(integration.provider_name)
+    if not products:
+        return 0, 0
+
+    PUSHABLE_STATUSES = ("Surrendered", "Lapsed", "Matured", "Claimed")
+
+    policies = frappe.db.get_all(
+        "Insurance Policy",
+        filters={
+            "insurance_product": ["in", products],
+            "policy_status": ["in", PUSHABLE_STATUSES],
+        },
+        fields=["name", "policy_number", "policy_status", "sum_assured"],
+    )
+
+    pushed = 0
+    failed = 0
+
+    for policy in policies:
+        policy_data = {
+            "policy_number": policy.policy_number or policy.name,
+            "policy_status": policy.policy_status,
+            "policy_amount": float(policy.sum_assured or 0),
+        }
+        success, message, reference = client.push_policy_update(policy_data)
+        if success:
+            pushed += 1
+            frappe.log_error(
+                title="Policy Update Pushed (Batch)",
+                message=f"Policy {policy.name} ({policy.policy_status}) pushed to {integration.provider_name}. Ref: {reference}"
+            )
+        else:
+            failed += 1
+            frappe.log_error(
+                title="Policy Update Failed (Batch)",
+                message=f"Policy {policy.name} ({policy.policy_status}) — {message}"
+            )
+
+    return pushed, failed
+
+
+def _verify_customers_for_provider(integration, client):
+    """Batch verify customer identity with the provider.
+    
+    Finds Insurance Customers linked to policies from this provider
+    and calls verify_customer on each.
+    """
+    products = _get_products_for_provider(integration.provider_name)
+    if not products:
+        return 0, 0
+
+    # Get unique customers from policies linked to this provider's products
+    customer_names = frappe.db.get_all(
+        "Insurance Policy",
+        filters={
+            "insurance_product": ["in", products],
+            "policy_status": "Active",
+        },
+        pluck="customer",
+        distinct=True,
+    )
+
+    verified = 0
+    failed = 0
+
+    for cust_name in customer_names:
+        customer = frappe.get_doc("Insurance Customer", cust_name)
+        customer_data = {
+            "name": customer.customer_name,
+            "email": customer.email_id or "",
+            "phone": customer.mobile_no or "",
+        }
+
+        success, message, provider_ref = client.verify_customer(customer_data)
+        if success:
+            verified += 1
+            frappe.log_error(
+                title="Customer Verified (Batch)",
+                message=f"Customer {customer.name} ({customer.customer_name}) verified with {integration.provider_name}. Ref: {provider_ref}"
+            )
+        else:
+            failed += 1
+
+    return verified, failed
 
 
 # ──────────────────────────────────────────────
