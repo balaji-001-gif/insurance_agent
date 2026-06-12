@@ -39,6 +39,7 @@ doc_events = {
 scheduler_events = {
     "daily": [
         "insurance_agent_mgmt.ai_engine.batch_score_leads",
+        "insurance_agent_mgmt.renewal_automation.auto_create_policy_renewals",
     ],
     "hourly": [],
     "weekly": [],
