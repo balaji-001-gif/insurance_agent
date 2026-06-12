@@ -42,6 +42,12 @@ A full-featured Insurance Agent CRM built on **Frappe/ERPNext V15+** for LIC and
 | **Agent Daily Digest** | Automated daily email with upcoming renewals, overdue premiums, pending commissions |
 | **Claim Management** | Submit and track insurance claims with provider push |
 | **Role-Based Access** | Insurance Admin, Insurance Manager, Insurance Agent |
+| **⬆️ Multiple Nominees** | Policy Nominee child table supports multiple nominees with share %, guardian for minors |
+| **⬆️ Health Dependencies** | Capture pre-existing conditions, family history, lifestyle factors for Health Insurance policies |
+| **⬆️ Age-Based Sum Assured** | Auto-calculate sum assured using configurable formulas (Base + Age × Multiplier, Base × Age, Fixed Amount) |
+| **⬆️ Customer Service Requests** | Submittable DocType for tracking nominee changes, address changes, KYC updates, policy surrender, and more — with auto-apply on approval |
+| **⬆️ Premium Payment Schedule** | Auto-generated full premium schedule from commencement to maturity with per-installment status, receipt upload, and payment sync |
+| **⬆️ KYC Document Uploads** | Direct PAN Card & Aadhaar Card attachment fields on Customer + expandable KYC document table |
 
 ---
 
@@ -49,54 +55,95 @@ A full-featured Insurance Agent CRM built on **Frappe/ERPNext V15+** for LIC and
 
 ### DocType Tree
 
-```
-Insurance Product          ← Master data (auto-named by product_code)
-  └── Commission rates, eligibility criteria
+```Insurance Product              ← Master data (auto-named by product_code)
+  └── Commission rates, eligibility criteria, auto-calc formulas for sum assured
 
-Insurance Agent            ← Sales personnel
+Insurance Agent                ← Sales personnel
   ├── Frappe User link, targets, commission rate
   ├── Leads & Customers assigned to them
   └── Policies & Commissions linked
 
-Insurance Lead             ← Prospects (auto: INS-LEAD-YYYY-#####)
+Insurance Lead                 ← Prospects (auto: INS-LEAD-YYYY-#####)
   ├── AI Score, Conversion Probability, AI Recommendations
   ├── Lead Product Interest (child table) — interested products
   ├── Follow Up Activity (linked) — call/visit logs
   └── Converts to → Insurance Customer
 
-Insurance Customer         ← Converted leads (auto: INS-CUST-YYYY-#####)
+Insurance Customer             ← Converted leads (auto: INS-CUST-YYYY-#####)
   ├── KYC (PAN, Aadhaar, nominee)
+  ├── ⬆️ PAN Card & Aadhaar Card attachment uploads
+  ├── ⬆️ Other KYC Documents (child table) — Passport, DL, Bank Statements, etc.
   ├── Policies (linked)
   └── Follow Up Activities (linked)
 
-Insurance Policy           ← Policies issued (auto: INS-POL-YYYY-#####)
+Insurance Policy               ← Policies issued (auto: INS-POL-YYYY-#####)
   ├── Submittable (Proposal → Active)
+  ├── ⬆️ Policy Nominees (child table) — multiple nominees with share %
+  ├── ⬆️ Health Dependencies (child table) — pre-existing conditions for Health Insurance
+  ├── ⬆️ Premium Schedule (child table) — full installment schedule with receipt upload
+  ├── ⬆️ Age-at-Commencement (auto-calculated from customer DOB)
+  ├── ⬆️ Auto sum-assured calculation from product formula
+  ├── ⬆️ Auto premium loading from health dependencies
   ├── Premium Payment (linked)
   ├── Policy Renewal (linked)
   ├── Agent Commission (linked)
   └── Insurance Claim (linked)
 
-Premium Payment            ← Premium collections
+Premium Payment                ← Premium collections
   ├── Triggers: auto-create commission, update policy paid amount
+  ├── ⬆️ Syncs with Premium Schedule on the policy
   └── Reverses on cancel
 
-Policy Renewal             ← Auto-created renewal records
+Policy Renewal                 ← Auto-created renewal records
   ├── Auto-priority (Critical/High/Medium/Low based on days left)
   └── Agent contact tracking
 
-Agent Commission           ← Auto-created from payments
+Agent Commission               ← Auto-created from payments
   ├── First Year / Renewal type
   ├── TDS calculation
-  └── Net commissionInsurance Claim              ← Claims submitted
+  └── Net commission
+
+Insurance Claim                ← Claims submitted
   ├── Submitted/Approved/Rejected flow
   └── Pushes to provider API on submit
 
-Insurance Document          ← Document/image attachments (KYC, claim docs)
+Insurance Document             ← Document/image attachments (KYC, claim docs, service request docs)
+  ├── ⬆️ Expanded types: Aadhaar Card, PAN Card, Passport, Driving License, etc.
+  └── Reusable across Claims, Customers, and Service Requests
 
-Fraud Indicator            ← Fraud flags (extensible)
+Fraud Indicator                ← Fraud flags (extensible)
 
-Provider API Integration   ← External provider config
+Provider API Integration       ← External provider config
   └── Auth methods, sync toggles, sync logs
+
+─── ⬆️ NEW DOCTYPES ───
+
+Policy Nominee                 ← Child table for multiple nominees (istable)
+  ├── Name, Relation, DOB, Share %, Mobile
+  └── Guardian (for minor nominees), Minor flag
+
+Health Dependency              ← Child table for health risk assessment (istable)
+  ├── Pre-existing Condition, Family History, Lifestyle Factor, Disability
+  ├── Severity, Diagnosis Date, Medication, Premium Loading %
+  └── Only shown for Health Insurance products
+
+Premium Schedule Item          ← Child table for payment schedule (istable)
+  ├── Installment #, Period Label, Due Date, Amount, Status
+  ├── Paid Date, Receipt Number, Payment Reference
+  ├── ⬆️ Receipt Attachment (upload PDF/image from insurance company)
+  └── Links to Premium Payment entry
+
+Service Request Nominee        ← Child table for structured nominee change data (istable)
+  ├── Name, Relation, DOB, Share %, Mobile
+  ├── Guardian, Minor flag
+  └── Action: Add / Update / Remove
+
+Customer Service Request       ← Service request tracking (auto: SRV-YYYY-#####, submittable)
+  ├── Service Types: Nominee Change, Address Change, Contact Update, KYC Update
+  ├── Policy Surrender, Policy Revival, Loan Request, Portability, etc.
+  ├── Open → In Progress → Approved/Rejected → Completed workflow
+  ├── Auto-applies changes to Policy/Customer on approval
+  └── Supports structured nominee data via Service Request Nominee child table
 ```
 
 ### Module Structure
