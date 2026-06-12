@@ -39,7 +39,8 @@
  "links": [
   {"group": "Payments", "link_doctype": "Premium Payment", "link_fieldname": "policy"},
   {"group": "Renewals", "link_doctype": "Policy Renewal", "link_fieldname": "policy"},
-  {"group": "Commission", "link_doctype": "Agent Commission", "link_fieldname": "policy"}
+  {"group": "Commission", "link_doctype": "Agent Commission", "link_fieldname": "policy"},
+  {"group": "Claims", "link_doctype": "Insurance Claim", "link_fieldname": "insurance_policy"}
  ],
  "modified": "2025-01-01 00:00:00.000000",
  "modified_by": "Administrator",

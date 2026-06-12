@@ -27,8 +27,7 @@ class InsuranceClaim(Document):
             )
 
     def on_submit(self):
-        if self.claim_status == "Draft":
-            self.db_set("claim_status", "Submitted")
+        self.db_set("claim_status", "Submitted")
 
     def on_cancel(self):
         self.db_set("claim_status", "Closed")
