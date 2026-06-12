@@ -117,10 +117,12 @@ def mark_lapsed_policies():
             frappe.db.set_value("Insurance Policy", policy.name, "policy_status", "Lapsed")
 
             # Update related Policy Renewal records to Lapsed
-            frappe.db.set_value("Policy Renewal", {
+            renewals = frappe.db.get_all("Policy Renewal", {
                 "policy": policy.name,
                 "status": ["in", ["Due", "Contacted", "Grace Period"]],
-            }, "status", "Lapsed", update_modified=False)
+            }, pluck="name")
+            for rn in renewals:
+                frappe.db.set_value("Policy Renewal", rn, "status", "Lapsed", update_modified=False)
 
             marked += 1
         except Exception as e:
