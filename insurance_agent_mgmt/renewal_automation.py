@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 import frappe
-from frappe.utils import add_days, today, now_datetime
+from frappe.utils import add_days, now_datetime
 
 
 def auto_create_policy_renewals():
