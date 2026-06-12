@@ -1,1 +1,2 @@
 frappe
+gunicorn @ git+https://github.com/frappe/gunicorn@bb554053bb87218120d76ab6676af7015680e8b6

@@ -13,7 +13,5 @@ authors = [
 ]
 dependencies = [
     "frappe",
+    "gunicorn @ git+https://github.com/frappe/gunicorn@bb554053bb87218120d76ab6676af7015680e8b6",
 ]
-
-[tool.uv.sources]
-gunicorn = { git = "https://github.com/frappe/gunicorn", rev = "bb554053bb87218120d76ab6676af7015680e8b6" }
