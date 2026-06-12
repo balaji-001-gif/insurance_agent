@@ -17,7 +17,6 @@ Architecture:
 
 import json
 import frappe
-from frappe import _
 from frappe.utils import today, now_datetime, add_days
 
 
@@ -647,47 +646,85 @@ def _upsert_renewals(provider_name, renewals):
     return count
 
 
+
 # ──────────────────────────────────────────────
-# Whitelisted API Methods (called from UI buttons)
+# Two-way push helpers (called from doc_events in hooks.py)
 # ──────────────────────────────────────────────
 
-@frappe.whitelist()
-def run_provider_sync(integration_name):
-    """Manually trigger a full sync for a provider integration."""
-    result = sync_provider_integration(integration_name)
-    return result
+def push_claim_to_provider(doc, method):
+    """When an Insurance Claim is submitted, push it to the provider's API."""
+    if doc.docstatus != 1:
+        return
 
+    # Find the integration for this claim's policy provider
+    policy = frappe.get_doc("Insurance Policy", doc.insurance_policy) if doc.insurance_policy else None
+    if not policy:
+        return
 
-@frappe.whitelist()
-def run_provider_sync_all():
-    """Manually trigger sync for all active integrations."""
-    return sync_all_providers()
+    # Get the policy's product to find the provider
+    product = frappe.get_doc("Insurance Product", policy.insurance_product) if policy.insurance_product else None
+    if not product or not product.insurance_company:
+        return
 
+    provider_name = product.insurance_company
+    integration_name = frappe.db.get_value(
+        "Provider API Integration",
+        {"provider_name": provider_name, "is_active": 1, "push_claims": 1},
+        "name"
+    )
+    if not integration_name:
+        return
 
-@frappe.whitelist()
-def sync_provider_plans(integration_name):
-    """Sync only plans from a provider integration."""
     integration = _get_integration_doc(integration_name)
-    if not integration.is_active or not integration.sync_enabled:
-        return {"status": "skipped", "message": "Integration is not active"}
-
     client = _get_client_for_integration(integration)
-    plans = client.fetch_plans()
-    if plans:
-        count = _upsert_plans(integration.provider_name, plans)
-        return {"status": "ok", "plans_synced": count}
-    return {"status": "ok", "plans_synced": 0}
+
+    claim_data = {
+        "policy_number": policy.policy_number or policy.name,
+        "claim_type": doc.claim_type,
+        "claim_amount": float(doc.claim_amount or 0),
+        "incident_date": str(doc.incident_date or ""),
+        "description": doc.incident_description or "",
+    }
+
+    success, message, reference = client.push_claim(claim_data)
+    if success and reference:
+        doc.db_set("claim_status", "Sent to Provider")
+        frappe.log_error(
+            title="Claim Pushed to Provider",
+            message=f"Claim {doc.name} pushed to {provider_name}. Ref: {reference}"
+        )
 
 
-@frappe.whitelist()
-def verify_provider_connection(integration_name):
-    """Test the connection to a provider API by fetching plans as a health check."""
+def push_policy_update_to_provider(doc, method):
+    """When a policy status changes (Surrendered/Cancelled), notify the provider."""
+    if not doc.policy_status:
+        return
+
+    product = frappe.get_doc("Insurance Product", doc.insurance_product) if doc.insurance_product else None
+    if not product or not product.insurance_company:
+        return
+
+    provider_name = product.insurance_company
+    integration_name = frappe.db.get_value(
+        "Provider API Integration",
+        {"provider_name": provider_name, "is_active": 1},
+        "name"
+    )
+    if not integration_name:
+        return
+
     integration = _get_integration_doc(integration_name)
-    try:
-        client = _get_client_for_integration(integration)
-        plans = client.fetch_plans()
-        if plans is not None:
-            return {"status": "ok", "message": f"Connected successfully. Found {len(plans)} plans."}
-        return {"status": "error", "message": "Connected but no data returned."}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    client = _get_client_for_integration(integration)
+
+    policy_data = {
+        "policy_number": doc.policy_number or doc.name,
+        "policy_status": doc.policy_status,
+        "policy_amount": float(doc.sum_assured or 0),
+    }
+
+    success, message, reference = client.push_policy_update(policy_data)
+    if reference:
+        frappe.log_error(
+            title="Policy Update Pushed",
+            message=f"Policy {doc.name} status '{doc.policy_status}' pushed to {provider_name}. Ref: {reference}"
+        )

@@ -31,6 +31,12 @@ doc_events = {
         "on_submit": "insurance_agent_mgmt.api.create_agent_commission_on_payment",
         "on_cancel": "insurance_agent_mgmt.api.cancel_agent_commission_on_payment",
     },
+    "Insurance Policy": {
+        "on_update": "insurance_agent_mgmt.provider_integration.push_policy_update_to_provider",
+    },
+    "Insurance Claim": {
+        "on_submit": "insurance_agent_mgmt.provider_integration.push_claim_to_provider",
+    },
 }
 
 # ---------------------------------------------
