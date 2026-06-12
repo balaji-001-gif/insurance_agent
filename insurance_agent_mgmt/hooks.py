@@ -33,6 +33,7 @@ doc_events = {
     },
     "Insurance Policy": {
         "on_update": "insurance_agent_mgmt.provider_integration.push_policy_update_to_provider",
+        "on_cancel": "insurance_agent_mgmt.provider_integration.push_policy_update_to_provider",
     },
     "Insurance Claim": {
         "on_submit": "insurance_agent_mgmt.provider_integration.push_claim_to_provider",
