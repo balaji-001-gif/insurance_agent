@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "insurance_agent_mgmt"
+version = "1.0.0"
+description = "Insurance Agent Management for ERPNext V15+"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "Your Organization", email = "admin@yourorg.com"},
+]
+dependencies = [
+    "frappe",
+]
+
+[tool.uv.sources]
+gunicorn = { git = "https://github.com/frappe/gunicorn", rev = "bb554053bb87218120d76ab6676af7015680e8b6" }
