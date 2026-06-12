@@ -27,6 +27,10 @@ doc_events = {
     "Insurance Lead": {
         "validate": "insurance_agent_mgmt.ai_engine.score_lead",
     },
+    "Premium Payment": {
+        "on_submit": "insurance_agent_mgmt.api.create_agent_commission_on_payment",
+        "on_cancel": "insurance_agent_mgmt.api.cancel_agent_commission_on_payment",
+    },
 }
 
 # ---------------------------------------------
