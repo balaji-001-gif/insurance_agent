@@ -21,12 +21,10 @@ def auto_create_policy_renewals():
           AND ip.premium_frequency != 'Single'
           AND ip.next_premium_date IS NOT NULL
           AND ip.next_premium_date <= %(end_date)s
-          AND ip.next_premium_date >= %(start_date)s
         ORDER BY ip.next_premium_date ASC
         """,
         {
             "end_date": end_date,
-            "start_date": today(),
         },
         as_dict=True,
     )
