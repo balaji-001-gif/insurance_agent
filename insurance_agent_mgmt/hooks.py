@@ -41,6 +41,7 @@ scheduler_events = {
         "insurance_agent_mgmt.ai_engine.batch_score_leads",
         "insurance_agent_mgmt.renewal_automation.auto_create_policy_renewals",
         "insurance_agent_mgmt.renewal_automation.mark_lapsed_policies",
+        "insurance_agent_mgmt.agent_digest.send_daily_agent_digest",
     ],
     "hourly": [],
     "weekly": [],
