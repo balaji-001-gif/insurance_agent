@@ -123,6 +123,40 @@ def get_agent_leaderboard(period="monthly"):
     return data
 
 
+@frappe.whitelist()
+def get_renewals_this_week():
+    """Return renewals due this week for the current agent (or all for admins)."""
+    from frappe.utils import add_days, today
+
+    from insurance_agent_mgmt.utils import get_current_agent, is_insurance_admin_or_manager
+
+    agent = get_current_agent()
+    is_admin = is_insurance_admin_or_manager()
+
+    week_end = add_days(today(), 7)
+
+    conditions = ""
+    if not is_admin and agent:
+        conditions += f" AND pr.agent = '{agent}'"
+
+    data = frappe.db.sql(
+        f"""
+        SELECT pr.name, pr.policy, pr.customer, pr.agent,
+               pr.renewal_due_date, pr.renewal_amount, pr.priority, pr.status,
+               DATEDIFF(pr.renewal_due_date, CURDATE()) as days_left
+        FROM `tabPolicy Renewal` pr
+        WHERE pr.status IN ('Due', 'Contacted', 'Grace Period')
+          AND pr.renewal_due_date <= %(week_end)s
+          AND pr.renewal_due_date >= CURDATE()
+          {conditions}
+        ORDER BY pr.renewal_due_date ASC, pr.priority DESC
+        """,
+        {"week_end": week_end},
+        as_dict=True,
+    )
+    return data
+
+
 def _resolve_agent(doc):
     """Resolve the agent from the payment or its linked policy."""
     agent = doc.agent

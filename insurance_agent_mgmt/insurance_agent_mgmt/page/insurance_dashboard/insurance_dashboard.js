@@ -65,6 +65,41 @@ function loadDashboard() {
         },
     });
 
+    // Renewals Due This Week
+    frappe.call({
+        method: "insurance_agent_mgmt.api.get_renewals_this_week",
+        callback(r) {
+            if (!r.message || !r.message.length) {
+                $("#renewals-week-table").html(`<p class="text-muted text-center py-3">✅ No renewals due this week</p>`);
+                return;
+            }
+            let html = `<table class="table table-sm table-hover">
+                <thead class="thead-light"><tr>
+                    <th>Policy</th><th>Customer</th><th>Due Date</th>
+                    <th>Amount</th><th>Days Left</th><th>Priority</th>
+                </tr></thead><tbody>`;
+            r.message.forEach(rn => {
+                const days = rn.days_left;
+                const color = days <= 0 ? "danger" : days <= 3 ? "warning" : "success";
+                const priorityColors = {
+                    "Critical": "red", "High": "orange",
+                    "Medium": "blue", "Low": "grey",
+                };
+                const pColor = priorityColors[rn.priority] || "grey";
+                html += `<tr>
+                    <td><a href="/app/policy-renewal/${rn.name}">${rn.policy}</a></td>
+                    <td>${rn.customer}</td>
+                    <td>${rn.renewal_due_date}</td>
+                    <td>₹${frappe.format(rn.renewal_amount || 0, {fieldtype:"Currency"})}</td>
+                    <td><span class="indicator-pill ${color}">${days > 0 ? days + "d" : "Overdue"}</span></td>
+                    <td><span class="indicator-pill ${pColor}">${rn.priority}</span></td>
+                </tr>`;
+            });
+            html += "</tbody></table>";
+            $("#renewals-week-table").html(html);
+        },
+    });
+
     // Leaderboard
     frappe.call({
         method: "insurance_agent_mgmt.api.get_agent_leaderboard",
